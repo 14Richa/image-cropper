@@ -1,101 +1,117 @@
-import React, { Component } from 'react';
-//import Resizer from 'react-image-file-resizer';
-import ImageUploader from 'react-images-upload';
+import React from 'react';
+import Dropzone from 'react-dropzone';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
+
+
+const imgMaxSize = 100000000//bytes;
+const FileTypes = ['image/x-png', 'image/png', 'image/jpg', 'image/jpeg', 'image/gif']
 class App extends React.Component {
- 
-    constructor(props) {
-        super(props);
-         this.state = { pictures: [] };
-         this.onDrop = this.onDrop.bind(this);
+  //const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
+  constructor(props) {
+    super(props)
+    this.state = {
+        imgSrc: null, 
+        crop: {
+            aspects: 1/1,
+            
+        } 
     }
- 
-    onDrop(picture) {
+  }
+  
 
-var width, height;
+    alertFile = (files) => {
+        if(files && files.length>0){
+            const currentFile = files[0];
+            const currentFileSize = currentFile.size;
+            const currentFileType = currentFile.type;
+            if(currentFileSize > imgMaxSize){
+                alert("This file is too big");
+                return false;
+            }
+            if(!FileTypes.includes(currentFileType)){
+                alert("This file type is not supported");
+                return false;
+            }
+            return true;
+        }
 
-var img = document.createElement("img");
-img.onload = function() {
-    // `naturalWidth`/`naturalHeight` aren't supported on <IE9. Fallback to normal width/height
-    // The natural size is the actual image size regardless of rendering.
-    // The 'normal' width/height are for the **rendered** size.
+    };
 
-    width  = img.naturalWidth  || img.width;
-    height = img.naturalHeight || img.height; 
-    console.log(height);
-    // Do something with the width and height
-}
+    onDropFn = (files, rejectedFiles) => {
+        console.log(files);
+        if(rejectedFiles && rejectedFiles.length > 0){
+           this.alertFile(rejectedFiles);
+        }
+        if(files && files.length>0 ){
+            const isVerified = this.alertFile(files)
+            if(isVerified) {
+                const currentFile = files[0]
+                const reader = new FileReader()
+                reader.addEventListener("load", () => {
+                    this.setState({
+                        imgSrc: reader.result
+                    })
 
-// Setting the source makes it start downloading and eventually call `onload`
-img.src = picture[0];
+                }, false)
+
+                reader.readAsDataURL(currentFile)
+            }
 
 
-        console.log(picture[0]);
-        this.setState({
-            pictures: this.state.pictures.concat(picture),
-        });
+        }
     }
- 
-    render() {
-        return (
-          <div>
-            <ImageUploader
-                withIcon={true}
-                buttonText='Choose images'
-                onChange={this.onDrop}
-                imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                maxFileSize={5242880}
-                minFileSize={1204}
-                withPreview = {true}
-            />
-           </div>
+    
 
-        );
+    handleImageLoaded = (image) => {
+        console.log(image)
+    }
+    handleOnCropChange = (crop) => {
+        console.log(crop)
+        this.setState({crop:crop})
+        console.log(this.state)
+    }
+    handleOnCropComplete = (crop, pixelCrop) => {
+        console.log(crop,pixelCrop)
+    }
+
+render(){
+    const {imgSrc} = this.state
+      return (
+        <div>
+        
+
+        {imgSrc !== null ? 
+            <div> 
+                
+
+           
+            <ReactCrop src = {imgSrc} 
+            crop = {this.state.crop} 
+            onImageLoaded = {this.handleImageLoaded}
+            onComplete = {this.handleOnCropComplete}
+            onChange = {this.handleOnCropChange}/>
+            </div>
+
+
+
+            : <Dropzone onDrop={this.onDropFn} accept={FileTypes} multiple={false} maxSize={imgMaxSize}>
+            {({getRootProps, getInputProps}) => (
+                <section>
+                  <div {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    <p>Drag 'n' drop some files here, or click to select files</p>
+                  </div>
+                </section>
+            )}
+        </Dropzone>}
+        
+        </div>
+        
+      );
     }
 }
 
 export default App;
-
-// class App extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.fileChangedHandler = this.fileChangedHandler.bind(this);
-//         this.state = {img: null};
-//     }
- 
-//     fileChangedHandler(event) {
-//         var fileInput = false
-//         if(event.target.files[0]) {
-//             fileInput = true
-//         }
-//         if(fileInput) {
-//             Resizer.imageFileResizer(
-//                 event.target.files[0],
-//                 1204,
-//                 1204,
-//                 'JPG',
-//                 100,
-//                 0,
-//                 uri => {
-//                     this.setState({image: uri});
-//                     console.log(this.state);
-//                 },
-//                 'base64'
-//             );
-//         }
-//     }
- 
-//     render() {
-//         return (
-//             <div className="App">
-//                 <input  type="file" onChange={this.fileChangedHandler}/>
-//                 <img src={this.state.image} />
-//                 <p> "Hello" </p>
-//                 <p> {console.log(this.state.image)}</p>
-//             </div>
-//         );
-//     }
-// }
- 
-//export default App;
 
