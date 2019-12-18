@@ -2,7 +2,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-
+import {image64toCanvasRef, extractImageFileExtensionFromBase64, downloadBase64File, base64StringtoFile} from './ResuableUtils';
 
 
 const imgMaxSize = 100000000//bytes;
@@ -11,6 +11,7 @@ class App extends React.Component {
   //const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
   constructor(props) {
     super(props)
+    this.imagePreviewCanvasRef = React.createRef()
     this.state = {
         imgSrc: null, 
         crop: {
@@ -68,12 +69,31 @@ class App extends React.Component {
         console.log(image)
     }
     handleOnCropChange = (crop) => {
-        console.log(crop)
+        //console.log(crop)
         this.setState({crop:crop})
         console.log(this.state)
     }
     handleOnCropComplete = (crop, pixelCrop) => {
-        console.log(crop,pixelCrop)
+        //console.log(crop,pixelCrop)
+
+        const canvasRef = this.imagePreviewCanvasRef.current
+        const imgSrc = this.state
+        image64toCanvasRef(canvasRef, imgSrc, pixelCrop)
+    }
+
+    handleOnDownloadClick = (event) => {
+        event.preventDefault()
+        const canvasRef = this.imagePreviewCanvasRef.current
+        const imgSrc = this.state.imgSrc;
+        const fileExtension = extractImageFileExtensionFromBase64(imgSrc)
+        const myFilename = "previewFile." + fileExtension
+
+        const myNewCropperFile = base64StringtoFile(imgSrc)
+        console.log(myNewCropperFile)
+
+        // to download file 
+
+        downloadBase64File(imgSrc, myFilename)
     }
 
 render(){
@@ -92,21 +112,30 @@ render(){
             onImageLoaded = {this.handleImageLoaded}
             onComplete = {this.handleOnCropComplete}
             onChange = {this.handleOnCropChange}/>
+           
+
+            <br />
+            <p> Preview Canvas Crop </p>
+            <canvas ref = {this.imagePreviewCanvasRef}></canvas>
+            <button onClick = {this.handleOnDownloadClick}> Download </button>
             </div>
 
+           
 
-
-            : <Dropzone onDrop={this.onDropFn} accept={FileTypes} multiple={false} maxSize={imgMaxSize}>
+            : <Dropzone  onDrop={this.onDropFn} accept={FileTypes} multiple={false} maxSize={imgMaxSize}>
             {({getRootProps, getInputProps}) => (
                 <section>
                   <div {...getRootProps()}>
                     <input {...getInputProps()} />
-                    <p>Drag 'n' drop some files here, or click to select files</p>
+                    <button style = {{marginTop: "140px", marginLeft: "740px"}} ><p> Click here to select a file</p></button>
                   </div>
                 </section>
             )}
-        </Dropzone>}
-        
+        </Dropzone>
+
+    }
+
+       
         </div>
         
       );
