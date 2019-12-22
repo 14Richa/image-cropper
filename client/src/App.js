@@ -77,7 +77,7 @@ onDropFn = (info) => {
         }
         else
         {
-            message.error("File Type not supported");
+            message.error("File Type not supportedgit ");
         }
     }
     else if (info.file.status === 'error') {
