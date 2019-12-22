@@ -1,9 +1,9 @@
 import React from 'react';
-import Dropzone from 'react-dropzone';
+//import Dropzone from 'react-dropzone';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import {image64toCanvasRef, extractImageFileExtensionFromBase64, downloadBase64File, base64StringtoFile, makeClientCrop} from './ResuableUtils';
-import { Upload, message, Icon, PageHeader, Tabs, Button, Statistic, Descriptions } from 'antd';
+import {image64toCanvasRef, extractImageFileExtensionFromBase64, downloadBase64File, base64StringtoFile} from './ResuableUtils';
+import { Upload, message, Icon, PageHeader, Button, Descriptions } from 'antd';
 import { Menu, Dropdown, Row, Col } from 'antd';
 import 'antd/dist/antd.css'
 //const imgMaxSize = 100000000//bytes;
@@ -24,7 +24,7 @@ constructor(props) {
             unit: 'px',
             height: 755,
             width: 450,
-            zoom: 1,
+            //zoom: 1,
             
         } 
     }
@@ -197,7 +197,8 @@ render(){
 
             <Descriptions size="small" column={2}>
                 <Descriptions.Item label="Created">Richa Sharma</Descriptions.Item>
-                <Descriptions.Item label="Tech"> <a href="https://reactjs.org/" target = "_blank">ReactJS</a> and <a href="https://ant.design/docs/react/introduce" target = "_blank">Ant design </a></Descriptions.Item>
+                <Descriptions.Item label="Tech"> <a href="https://reactjs.org/" target = "_blank"  >ReactJS</a> and <a href="https://ant.design/docs/react/introduce" target = "_blank">Ant design </a></Descriptions.Item>
+                
                 <Descriptions.Item label="Remarks">
                     Upload an image and choose the size you wish to crop to. You can choose pre-determined blocks or can do custom crop as well. It accepts images of size 1024x1024 only. 
                 </Descriptions.Item>
