@@ -187,7 +187,7 @@ OnCropChange = (crop) => {
     }
 
 render(){
-    const {imgSrc, croppedImageURL, fileList} = this.state
+    const {imgSrc} = this.state
       return(
         <div>
             <PageHeader style={{border: '1px solid rgb(235, 237, 240)'}}
