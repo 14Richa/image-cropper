@@ -1,6 +1,3 @@
-// A few JavaScript Functions for Images and Files
-// Author: Justin Mitchel
-// Source: https://kirr.co/ndywes
 
 // Convert a Base64-encoded string to a File object
 export function base64StringtoFile (base64String, filename) {
@@ -46,7 +43,7 @@ export function image64toCanvasRef (canvasRef, image64, pixelCrop, imageRef) {
   image.src = image64
   console.log(image);
   image.onload = function () {
-    if(canvas.width!=0)
+    if(canvas.width!==0)
     {
       ctx.drawImage(
           image,
