@@ -7,7 +7,7 @@ import { Upload, message, Icon, PageHeader, Tabs, Button, Statistic, Description
 import { Menu, Dropdown, Row, Col } from 'antd';
 import 'antd/dist/antd.css'
 //const imgMaxSize = 100000000//bytes;
-//const FileTypes = ['image/x-png', 'image/png', 'image/jpg', 'image/jpeg', 'image/gif']
+const FileTypes = ['image/x-png', 'image/png', 'image/jpg', 'image/jpeg', 'image/gif']
 
 
 
@@ -40,37 +40,45 @@ onDropFn = (info) => {
         fileList = [...info.fileList];
         fileList = fileList.slice(-1);
         const currentFile = fileList[0].originFileObj;
-        const reader = new FileReader()
+        const currentFileType = currentFile.type;
+        if(FileTypes.includes(currentFileType))
+        {
+            const reader = new FileReader()
+                
+                reader.addEventListener("load", () => {
+                    let image = new Image();
+                    image.src = reader.result;
+                    image.onload = () => {
+                        if(image.width !== 1024 || image.height !== 1024){
+                            message.error(`Image is ${image.height} x ${image.width}. Please upload 1024 x 1024 image`);
+                            fileList = [];
+                        }
+                        else
+                        {
+                            message.success(`${info.file.name} file uploaded successfully`);
         
-        reader.addEventListener("load", () => {
-            let image = new Image();
-            image.src = reader.result;
-            image.onload = () => {
-                if(image.width !== 1024 || image.height !== 1024){
-                    message.error(`Image is ${image.height} x ${image.width}. Please upload 1024 x 1024 image`);
-                    fileList = [];
-                }
-                else
-                {
-                    message.success(`${info.file.name} file uploaded successfully`);
-
-                    fileList = fileList.map(file => {
-                                if (file.response) {
-                                    file.url = file.response.url;
-                                  }
-                                  return file;
-                                });
-                    
-                    this.setState({
-                    imgSrc: reader.result,
-                    imgSrcExt:  extractImageFileExtensionFromBase64(reader.result),
-                    fileList: fileList 
-                    })
-                }
-            };
-
-        }, false)
-        reader.readAsDataURL(currentFile);  
+                            fileList = fileList.map(file => {
+                                        if (file.response) {
+                                            file.url = file.response.url;
+                                          }
+                                          return file;
+                                        });
+                            
+                            this.setState({
+                            imgSrc: reader.result,
+                            imgSrcExt:  extractImageFileExtensionFromBase64(reader.result),
+                            fileList: fileList 
+                            })
+                        }
+                    };
+        
+                }, false)
+                reader.readAsDataURL(currentFile);  
+        }
+        else
+        {
+            message.error("File Type not supported");
+        }
     }
     else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
